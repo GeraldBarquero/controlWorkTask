@@ -10,40 +10,44 @@ interface User {
     data: object;
 }
 
-const users = express()
-users.get('/', async(req,res,next)=>{
+const usuarios = express()
+usuarios.get('/', async(req,res,next)=>{
     try{
-        const usersResult = {
+        const usuariosResult = {
             ok: true,
             message: 'Exito / respondiendo'
         }
-        res.json(usersResult);
+        res.json(usuariosResult);
     }catch(e){
         next(e)
     }
 });
 
-users.get('/users', async(req,res,next)=>{
+usuarios.get('/usuarios', async(req,res,next)=>{
     try{
-        const usersList = await db.collection('users').get();
-        const usersResult: User[] = [];
-        usersList.forEach((doc) => {
-            usersResult.push({
+        console.log("get all usuarios")
+        console.log(req.params);
+        const usuariosList = await db.collection('usuarios').get();
+        const usuariosResult: User[] = [];
+        usuariosList.forEach((doc) => {
+            usuariosResult.push({
                 id: doc.id,
                 data: doc.data()
             });
         });
-        res.json(usersResult);
+        res.json(usuariosResult);
     }catch(e){
         next(e)
     }
 });
 
-users.get('/users:id', async(req, res, next) => {
+usuarios.get('/usuarios/:id', async(req, res, next) => {
     try {
+        console.log("get user by id")
         const id = req.params.id;
+        console.log(req.params);
         if (!id) throw new Error('id esta en blanco');
-        const user = await db.collection('users').doc(id).get();
+        const user = await db.collection('usuarios').doc(id).get();
         if (!user.exists) {
             throw new Error('usuario no existe');
         }
@@ -56,13 +60,12 @@ users.get('/users:id', async(req, res, next) => {
     }
 });
 
-users.post('/users', async (req, res, next) => {
+usuarios.post('/usuarios', async (req, res, next) => {
     try {
         console.log(req.body)
-        const text = req.body;
-        if (!text) throw new Error('No se han enviado los datos correctos');
+        if (!req.body) throw new Error('No se han enviado los datos correctos');
         
-        const ref = await db.collection('users').add(req.body);
+        const ref = await db.collection('usuarios').add(req.body);
         res.json({
             message: 'Usuario creado',
             id: ref.id
@@ -73,4 +76,4 @@ users.post('/users', async (req, res, next) => {
 });
 
 
-export default users;
+export default usuarios;

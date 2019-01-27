@@ -4,55 +4,55 @@ import config from '../db/config';
   
 const db = config.firestore();
 
-interface Rol {
+interface Modulo {
     id: string;
     data: object;
 }
 
-const roles = express()
+const modulos = express()
 
-roles.get('/', async(req,res,next)=>{
+modulos.get('/', async(req,res,next)=>{
     try{
-        const rolesList = await db.collection('roles').get();
-        const rolesResult: Rol[] = [];
-        rolesList.forEach((doc) => {
-            rolesResult.push({
+        const modulosList = await db.collection('modulos').get();
+        const modulosResult: Modulo[] = [];
+        modulosList.forEach((doc) => {
+            modulosResult.push({
                 id: doc.id,
                 data: doc.data()
             });
         });
-        res.json(rolesResult);
+        res.json(modulosResult);
     }catch(e){
         next(e)
     }
 });
 
-roles.get('/:id', async(req, res, next) => {
+modulos.get('/:id', async(req, res, next) => {
     try {
         const id = req.params.id;
         if (!id) throw new Error('id esta en blanco');
-        const rol = await db.collection('roles').doc(id).get();
-        if (!rol.exists) {
-            throw new Error('rol no existe');
+        const modulo = await db.collection('modulos').doc(id).get();
+        if (!modulo.exists) {
+            throw new Error('modulo no existe');
         }
         res.json({
-            id: rol.id,
-            data: rol.data()
+            id: modulo.id,
+            data: modulo.data()
         });
     } catch(e) {
         next(e);
     }
 });
 
-roles.post('/', async (req, res, next) => {
+modulos.post('/', async (req, res, next) => {
     try {
         console.log(req.body)
         const text = req.body;
         if (!text) throw new Error('No se han enviado los datos correctos');
         
-        const ref = await db.collection('roles').add(req.body);
+        const ref = await db.collection('modulos').add(req.body);
         res.json({
-            message: 'Rol creado',
+            message: 'modulo creado',
             id: ref.id
         });
     } catch(e) {
@@ -61,4 +61,4 @@ roles.post('/', async (req, res, next) => {
 });
 
 
-export default roles;
+export default modulos;
